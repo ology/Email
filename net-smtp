@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # Make sure SMPT email works.
-# -- gene.boggs@gmail.com
+# -- gene@cpan.org
 #
 use strict;
 use warnings;
@@ -11,15 +11,13 @@ use Sys::Hostname; # XXX This may or may not be handy.
 
 # Fetch/set parameters.
 my %params = (
-    to   => shift || die( "Usage: perl $0 to\@somehost [from\@yourhost mail.host 'Subject matter']" ),
+    to   => shift || usage(),
     from => shift || $ENV{USER} .'@'. hostname(),
     host => shift || 'mail.' . hostname(),
     subj => shift || 'Testing',
     body => shift || 'Testing Net::SMTP',
     date => scalar(localtime),
 );
-#use Data::Dumper;
-#die Data::Dumper->new([\%params])->Indent(1)->Terse(1)->Quotekeys(0)->Sortkeys(1)->Dump;
 
 my $smtp = Net::SMTP->new(
     $params{host},
@@ -40,3 +38,6 @@ $smtp->datasend("$params{body}\n");
 $smtp->dataend();
 $smtp->quit;
 
+sub usage {
+    die "Usage: perl $0 to\@somehost [from\@yourhost mail.host 'Subject matter' 'Message body']\n";
+}
