@@ -27,18 +27,19 @@ if ( !$imap->login( $username, $password ) ) {
     exit(64);
 }
 
-my $nm = $imap->select('INBOX');
-
 my ($unseen, $recent, $num_messages) = $imap->status();
 printf "Unseen: %d, Recent: %d, Total: %d\n\n", $unseen, $recent, $num_messages;
 
-for ( my $i = 1 ; $i <= $nm ; $i++ ) {
+my $m = $imap->select('INBOX');
+
+for ( my $i = 1 ; $i <= $m ; $i++ ) {
     if ( $imap->seen($i) ) {
         next;
     }
     else {
         my $es = Email::Simple->new( join '', @{ $imap->top($i) } );
-        printf "[%03d] %s %s\n\t%s\n", $i, $es->header('Date'), $es->header('From'), $es->header('Subject');
+        printf "[%03d] %s %s\n\t%s\n",
+            $i, $es->header('Date'), $es->header('From'), $es->header('Subject');
     }
 }
 
